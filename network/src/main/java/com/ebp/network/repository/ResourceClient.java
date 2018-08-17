@@ -1,6 +1,9 @@
 package com.ebp.network.repository;
 
 import com.ebp.network.model.ResourceConfiguration;
+import com.ebp.network.repository.service.GetResourceService;
+import com.ebp.network.repository.service.PostResourceService;
+import com.ebp.network.repository.service.ServiceResources;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -20,6 +23,11 @@ public class ResourceClient {
     public PostResourceService createPostClient(ResourceConfiguration configuration) {
         return getRetrofitBuilder(configuration.getBaseUrl(), getOkHttpClient(getLogLevel(configuration.getLogLevel())))
                 .create(PostResourceService.class);
+    }
+
+    public ServiceResources createClient(ResourceConfiguration configuration) {
+        return getRetrofitBuilder(configuration.getBaseUrl(), getOkHttpClient(getLogLevel(configuration.getLogLevel())))
+                .create(ServiceResources.class);
     }
 
     private Retrofit getRetrofitBuilder(String baseUrl, OkHttpClient client) {

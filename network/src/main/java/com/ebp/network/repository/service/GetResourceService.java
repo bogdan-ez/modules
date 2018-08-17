@@ -1,4 +1,4 @@
-package com.ebp.network.repository;
+package com.ebp.network.repository.service;
 
 import java.util.Map;
 

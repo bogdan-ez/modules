@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class ResourceConfigurationBuilder {
     private String baseUrl;
-    private String resourceUrl;
+    private String resource;
     private Map<String, String> headers;
     private Method method;
     private Object body;
@@ -13,7 +13,7 @@ public class ResourceConfigurationBuilder {
     public ResourceConfiguration build() {
         ResourceConfiguration configuration = new ResourceConfiguration();
         configuration.setBaseUrl(baseUrl);
-        configuration.setResource(resourceUrl);
+        configuration.setResource(resource);
         configuration.setHeaders(headers);
         configuration.setBody(body);
         configuration.setMethod(method);
@@ -27,8 +27,8 @@ public class ResourceConfigurationBuilder {
         return this;
     }
 
-    public ResourceConfigurationBuilder resourceUrl(String resourceUrl) {
-        this.resourceUrl = resourceUrl;
+    public ResourceConfigurationBuilder resource(String resourceUrl) {
+        this.resource = resourceUrl;
         return this;
     }
 

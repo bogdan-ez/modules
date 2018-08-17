@@ -6,6 +6,13 @@ import android.util.Log;
 import com.ebp.network.callback.ListOfObjectsCallback;
 import com.ebp.network.callback.SingleObjectCallback;
 import com.ebp.network.model.ResourceConfiguration;
+import com.ebp.network.repository.strategy.BodyOnlyPostStrategy;
+import com.ebp.network.repository.strategy.CallStrategy;
+import com.ebp.network.repository.strategy.HeadersOnlyGetStrategy;
+import com.ebp.network.repository.strategy.HeadersOnlyPostStrategy;
+import com.ebp.network.repository.strategy.MaximalPostStrategy;
+import com.ebp.network.repository.strategy.MinimalGetStrategy;
+import com.ebp.network.repository.strategy.MinimalPostStrategy;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -26,7 +33,7 @@ public class ResourceRepository implements IResourceRepository {
     @NonNull
     @Override
     public void getSingleData(ResourceConfiguration configuration, final Class clazz, final SingleObjectCallback callback) {
-        callService(configuration)
+        get(configuration)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<ResponseBody>() {
@@ -37,7 +44,7 @@ public class ResourceRepository implements IResourceRepository {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.e(TAG, "Error during loading call data. Message: " + e.getMessage());
+                        Log.e(TAG, "Error during loading data. Message: " + e.getMessage());
                         callback.onError(e.getMessage());
                     }
 
@@ -56,7 +63,7 @@ public class ResourceRepository implements IResourceRepository {
     @NonNull
     @Override
     public void getListData(ResourceConfiguration configuration, final Class clazz, final ListOfObjectsCallback callback) {
-        callService(configuration)
+        get(configuration)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<ResponseBody>() {
@@ -87,7 +94,7 @@ public class ResourceRepository implements IResourceRepository {
     @NonNull
     @Override
     public void postSingleData(ResourceConfiguration configuration, final Class clazz, final SingleObjectCallback callback) {
-        postSingle(configuration)
+        post(configuration)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<ResponseBody>() {
@@ -98,7 +105,7 @@ public class ResourceRepository implements IResourceRepository {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.e(TAG, "Error during posting call data. Message: " + e.getMessage());
+                        Log.e(TAG, "Error during posting data. Message: " + e.getMessage());
                         callback.onError(e.getMessage());
                     }
 
@@ -114,23 +121,31 @@ public class ResourceRepository implements IResourceRepository {
                 });
     }
 
-    private Single<ResponseBody> callService(ResourceConfiguration configuration) {
+    private Single<ResponseBody> get(ResourceConfiguration configuration) {
+        CallStrategy strategy;
         if (configuration.getHeaders() != null && configuration.getHeaders().size() > 0) {
-            return api.createGetClient(configuration).call(configuration.getResource(), configuration.getHeaders());
+            strategy = new HeadersOnlyGetStrategy();
+            return strategy.call(api.createClient(configuration), configuration);
         } else {
-            return api.createGetClient(configuration).call(configuration.getResource());
+            strategy = new MinimalGetStrategy();
+            return strategy.call(api.createClient(configuration), configuration);
         }
     }
 
-    private Single<ResponseBody> postSingle(ResourceConfiguration configuration) {
-        if (configuration.getHeaders() != null && configuration.getHeaders().size() > 0 && configuration.getBody() != null) {
-            return api.createPostClient(configuration).call(configuration.getResource(), configuration.getHeaders(), configuration.getBody());
+    private Single<ResponseBody> post(ResourceConfiguration configuration) {
+        CallStrategy strategy;
+        if (configuration.getBody() != null && configuration.getHeaders() != null && configuration.getHeaders().size() > 0) {
+            strategy = new MaximalPostStrategy();
+            return strategy.call(api.createClient(configuration), configuration);
         } else if (configuration.getHeaders() != null && configuration.getHeaders().size() > 0) {
-            return api.createPostClient(configuration).call(configuration.getResource(), configuration.getHeaders());
+            strategy = new HeadersOnlyPostStrategy();
+            return strategy.call(api.createClient(configuration), configuration);
         } else if (configuration.getBody() != null) {
-            return api.createPostClient(configuration).call(configuration.getResource(), configuration.getBody());
+            strategy = new BodyOnlyPostStrategy();
+            return strategy.call(api.createClient(configuration), configuration);
         } else {
-            return api.createPostClient(configuration).call(configuration.getResource());
+            strategy = new MinimalPostStrategy();
+            return strategy.call(api.createClient(configuration), configuration);
         }
     }
 }

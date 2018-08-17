@@ -3,28 +3,41 @@ package com.ebp.network.provider;
 import com.ebp.network.callback.ListOfObjectsCallback;
 import com.ebp.network.callback.SingleObjectCallback;
 import com.ebp.network.model.ResourceConfiguration;
-import com.ebp.network.repository.ResourceRepository;
 
-public class NetworkProvider {
-    private final static String TAG = NetworkProvider.class.getCanonicalName();
-    private static ResourceRepository mRepository;
+import java.util.List;
 
-    private static ResourceRepository provideResourceRepository() {
-        if (mRepository == null) {
-            mRepository = new ResourceRepository();
-        }
-        return mRepository;
-    }
+public interface NetworkProvider {
 
-    public void makeGetCall(ResourceConfiguration configuration, final Class clazz, final SingleObjectCallback callback) {
-        provideResourceRepository().getSingleData(configuration, clazz, callback);
-    }
+    /**
+     * Make GET call to remote resource which returns object into
+     * {@link SingleObjectCallback#onSuccess(Object)} method in case of success call otherwise
+     * return error message into {@link SingleObjectCallback#onError(String)} method.
+     *
+     * @param configuration the {@link ResourceConfiguration} to configure correct parameters
+     * @param clazz         the {@link Class} of returned object
+     * @param callback      the {@link SingleObjectCallback} for returning result to caller
+     */
+    void makeGetCall(ResourceConfiguration configuration, final Class clazz, final SingleObjectCallback callback);
 
-    public void makeGetCall(ResourceConfiguration configuration, final Class clazz, final ListOfObjectsCallback callback) {
-        provideResourceRepository().getListData(configuration, clazz, callback);
-    }
+    /**
+     * Make GET call to remote resource which returns list of objects to
+     * {@link ListOfObjectsCallback#onSuccess(List)} method in case of success call otherwise
+     * return error message into {@link SingleObjectCallback#onError(String)} method.
+     *
+     * @param configuration the {@link ResourceConfiguration} to configure correct parameters
+     * @param clazz         the {@link Class} of returned object
+     * @param callback      the {@link ListOfObjectsCallback} for returning result to caller
+     */
+    void makeGetCall(ResourceConfiguration configuration, final Class clazz, final ListOfObjectsCallback callback);
 
-    public void makePostCall(ResourceConfiguration configuration, final Class clazz, final SingleObjectCallback callback) {
-        provideResourceRepository().postSingleData(configuration, clazz, callback);
-    }
+    /**
+     * Make POST call to remote resource which returns object into
+     * {@link SingleObjectCallback#onSuccess(Object)} method in case of success call otherwise
+     * return error message into {@link SingleObjectCallback#onError(String)} method .
+     *
+     * @param configuration the {@link ResourceConfiguration} to configure correct parameters
+     * @param clazz         the {@link Class} of returned object
+     * @param callback      the {@link SingleObjectCallback} for returning result to caller
+     */
+    void makePostCall(ResourceConfiguration configuration, final Class clazz, final SingleObjectCallback callback);
 }

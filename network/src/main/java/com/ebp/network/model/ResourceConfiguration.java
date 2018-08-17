@@ -7,7 +7,7 @@ public class ResourceConfiguration {
     private String resource;
     private Map<String, String> headers;
     private Method method;
-    private Object object;
+    private Object body;
     private LogLevel logLevel = LogLevel.NONE;
 
     public String getBaseUrl() {
@@ -43,11 +43,11 @@ public class ResourceConfiguration {
     }
 
     public Object getBody() {
-        return object;
+        return body;
     }
 
     public void setBody(Object object) {
-        this.object = object;
+        this.body = object;
     }
 
     public LogLevel getLogLevel() {

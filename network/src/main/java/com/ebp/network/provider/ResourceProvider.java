@@ -6,14 +6,14 @@ public class ResourceProvider {
 
     public NetworkProvider provideNetworkProvider() {
         if (mNetworkProvider == null) {
-            mNetworkProvider = new NetworkProvider();
+            mNetworkProvider = new NetworkProviderImpl();
         }
         return mNetworkProvider;
     }
 
     public FileProvider provideFileProvider() {
         if (mFileProvider == null) {
-            mFileProvider = new FileProvider();
+            mFileProvider = new FileProviderImpl();
         }
         return mFileProvider;
     }
